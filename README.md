@@ -3,6 +3,14 @@
 Telegram bot that allows you to speak with gpt3 model.
 --
 
+## Prerequisite
+
+- You need to have the Telegram bot API key created  
+https://t.me/BotFather  
+
+- You need to have the OpenAI API key created  
+https://platform.openai.com/docs/quickstart/build-your-application  
+
 ## Usage
 
 ###### Pure python
@@ -22,4 +30,3 @@ OPENAI_API_KEY=<your open AI token>
 ```
 docker compose up
 ```
-
