@@ -1,2 +1,2 @@
-openai==0.26.5
+openai==0.27.2
 python_telegram_bot==20.0

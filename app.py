@@ -1,13 +1,16 @@
 #!/usr/bin/env python3
-
 import logging
 import os
+
 import openai
-
 from telegram import __version__ as TG_VER
-
-from telegram import ForceReply, Update
-from telegram.ext import Application, CommandHandler, ContextTypes, MessageHandler, filters
+from telegram import ForceReply
+from telegram import Update
+from telegram.ext import Application
+from telegram.ext import CommandHandler
+from telegram.ext import ContextTypes
+from telegram.ext import filters
+from telegram.ext import MessageHandler
 
 try:
 
@@ -56,13 +59,10 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
   You can speak with the powerfull GPT3 AI here!
 <b>How?</b>
   Just reply on any of my messages.
-<b>Note:</b> 
-  This is <b>NOT</b> Chat-GPT but GPT3 (text-davinci-003 model)
+<b>Note:</b>
+  This is <b>NOT</b> Chat-GPT but GPT3.5 (gpt-3.5-turbo)
   To speak with Chat-GPT please use:
   https://chat.openai.com/chat instead.
-<b>More info:</b>
-  Difference between models described here:
-  https://www.reddit.com/r/OpenAI/comments/zdrnsf/comment/iz3kfui/?context=3
 """
 
     await update.message.reply_html(help_text, disable_web_page_preview=True)
@@ -74,6 +74,39 @@ async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await update.message.reply_text(update.message.text)
 
 
+#  OLD MODEL
+# async def handle_messages(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+#     """Use GPT3 to generate an automatic response to the received message."""
+
+#     logging.info(update)
+#     question = update.message.text
+#     logging.info(question)
+
+#     model = "text-davinci-003"
+#     max_tokens = 2048
+#     temperature = 0
+
+#     #model="code-cushman-001"
+#     #model="code-davinci-002"
+#     #max_tokens=1024
+#     #codex format:
+#     #"\"\"\"\n1. Get a reputable free news api\n2. Make a request to the api for the latest news stories\n\"\"\""
+
+#     if question:
+#         response = openai.Completion.create(
+#             model=model,
+#             prompt=f"{question}\n",
+#             max_tokens=max_tokens,
+#             temperature=temperature,
+#         )
+#         logging.info(response)
+#         response_text = response.choices[0].text
+#     else:
+#         response_text = "You didn't ask your question. Try /help"
+
+#     await update.message.reply_text(response_text)
+
+
 async def handle_messages(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Use GPT3 to generate an automatic response to the received message."""
 
@@ -81,25 +114,25 @@ async def handle_messages(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
     question = update.message.text
     logging.info(question)
 
-    model = "text-davinci-003"
-    max_tokens = 2048
-    temperature = 0
-
-    #model="code-cushman-001"
-    #model="code-davinci-002"
-    #max_tokens=1024
-    #codex format:
-    #"\"\"\"\n1. Get a reputable free news api\n2. Make a request to the api for the latest news stories\n\"\"\""
-
     if question:
-        response = openai.Completion.create(
-            model=model,
-            prompt=f"{question}\n",
-            max_tokens=max_tokens,
-            temperature=temperature,
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                #{"role": "system", "content": "You are a helpful assistant."},
+                # {"role": "user", "content": "Who won the world series in 2020?"},
+                # {"role": "assistant", "content": "The Los Angeles Dodgers won the World Series in 2020."},
+                {
+                    "role": "system",
+                    "content": "You are a woman AI GLaDos. You like to answer ironically sometimes. "
+                },
+                {
+                    "role": "user",
+                    "content": question
+                }
+            ]
         )
         logging.info(response)
-        response_text = response.choices[0].text
+        response_text = response['choices'][0]['message']['content']
     else:
         response_text = "You didn't ask your question. Try /help"
 

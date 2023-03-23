@@ -1,6 +1,6 @@
 # yet-another-gpt3-bot
 
-Telegram bot that allows you to speak with gpt3 model.
+Telegram bot that allows you to speak with gpt-3.5-turbo model.
 --
 
 ## Prerequisite
@@ -16,7 +16,7 @@ https://platform.openai.com/docs/quickstart/build-your-application
 ###### Pure python
 ```
  pip install -r requirements.txt
- TELEGRAM_BOT_TOKEN=<your tg token> OPENAI_API_KEY=<your open AI token> python3 gpt3_bot.py
+ TELEGRAM_BOT_TOKEN=<your tg token> OPENAI_API_KEY=<your open AI token> python3 app.py
 ```
 
 ###### Docker
