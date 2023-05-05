@@ -30,3 +30,12 @@ async def generate_response(question: str) -> str:
 
     return response_text
 
+def generate_image(prompt):
+    response = openai.Image.create(prompt = prompt, n=1, size = "512x512")
+    logging.info(response)
+    image_url = response["data"][0]["url"]
+    # for debug use
+    # image_url = "https://catdoctorofmonroe.com/wp-content/uploads/2020/09/iconfinder_cat_tied_275717.png"
+    usage = 1 # reserve for future use
+    return (image_url)
+
