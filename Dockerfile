@@ -2,12 +2,13 @@ FROM python:3.11-slim
 
 LABEL name="gpt_bot" version="0.1.1"
 
-WORKDIR /opt/bot/
+WORKDIR /app
 
 # install pip requirements
-ADD ./requirements.txt ./requirements.txt
-RUN pip install -r requirements.txt
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
-COPY . .
+COPY myapp/ /app/
 
-CMD [ "/opt/bot/app.py" ]
+CMD ["python", "main.py"]
+

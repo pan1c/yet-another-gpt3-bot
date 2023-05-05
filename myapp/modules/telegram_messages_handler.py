@@ -1,8 +1,7 @@
-#!/usr/bin/env python3
-import logging
-import os
+from .logging import logging
+from .settings import telegram_api_token
+from .openai_conversation_handler import generate_response
 
-import openai
 from telegram import __version__ as TG_VER
 from telegram import ForceReply
 from telegram import Update
@@ -11,6 +10,7 @@ from telegram.ext import CommandHandler
 from telegram.ext import ContextTypes
 from telegram.ext import filters
 from telegram.ext import MessageHandler
+
 
 try:
 
@@ -27,16 +27,6 @@ if __version_info__ < (20, 0, 0, "alpha", 1):
         f"{TG_VER} version of this example, "
         f"visit https://docs.python-telegram-bot.org/en/v{TG_VER}/examples.html"
     )
-
-# Enable logging
-
-logging.basicConfig(format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO)
-
-logger = logging.getLogger(__name__)
-
-openai.api_key = os.getenv("OPENAI_API_KEY")
-telegram_api_token = os.environ["TELEGRAM_BOT_TOKEN"]
-
 
 # Define a few command handlers. These usually take the two arguments update and
 
@@ -73,68 +63,13 @@ async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
     await update.message.reply_text(update.message.text)
 
-
-#  OLD MODEL
-# async def handle_messages(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-#     """Use GPT3 to generate an automatic response to the received message."""
-
-#     logging.info(update)
-#     question = update.message.text
-#     logging.info(question)
-
-#     model = "text-davinci-003"
-#     max_tokens = 2048
-#     temperature = 0
-
-#     #model="code-cushman-001"
-#     #model="code-davinci-002"
-#     #max_tokens=1024
-#     #codex format:
-#     #"\"\"\"\n1. Get a reputable free news api\n2. Make a request to the api for the latest news stories\n\"\"\""
-
-#     if question:
-#         response = openai.Completion.create(
-#             model=model,
-#             prompt=f"{question}\n",
-#             max_tokens=max_tokens,
-#             temperature=temperature,
-#         )
-#         logging.info(response)
-#         response_text = response.choices[0].text
-#     else:
-#         response_text = "You didn't ask your question. Try /help"
-
-#     await update.message.reply_text(response_text)
-
-
 async def handle_messages(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Use GPT3 to generate an automatic response to the received message."""
-
+    """Handle incoming messages and generate a response using GPT-3."""
     logging.info(update)
     question = update.message.text
     logging.info(question)
 
-    if question:
-        response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
-            messages=[
-                #{"role": "system", "content": "You are a helpful assistant."},
-                # {"role": "user", "content": "Who won the world series in 2020?"},
-                # {"role": "assistant", "content": "The Los Angeles Dodgers won the World Series in 2020."},
-                {
-                    "role": "system",
-                    "content": "You are a woman AI GLaDos. You like to answer ironically sometimes. "
-                },
-                {
-                    "role": "user",
-                    "content": question
-                }
-            ]
-        )
-        logging.info(response)
-        response_text = response['choices'][0]['message']['content']
-    else:
-        response_text = "You didn't ask your question. Try /help"
+    response_text = await generate_response(question)
 
     await update.message.reply_text(response_text)
 
@@ -160,7 +95,7 @@ def main() -> None:
 
     application.run_polling()
 
-
 if __name__ == "__main__":
 
     main()
+

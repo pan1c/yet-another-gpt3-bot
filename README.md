@@ -26,6 +26,8 @@ cat secrets.env
 TELEGRAM_BOT_TOKEN=<your tg token>
 OPENAI_API_KEY=<your open AI token>
 ```
+Additional options supported, please see settings.py
+
 - run docker compose up command
 ```
 docker compose up

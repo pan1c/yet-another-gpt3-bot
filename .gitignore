@@ -22,6 +22,7 @@ venv.bak/
 
 bin/dev/test.sh
 secrets.env
+config.json
 
 #Linters
 
