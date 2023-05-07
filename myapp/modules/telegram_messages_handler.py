@@ -1,5 +1,5 @@
 from .logging import logging
-from .settings import telegram_api_token, help_text, welcome_text
+from .settings import telegram_api_token, help_text, welcome_text, allowed_chat_ids
 from .openai_conversation_handler import generate_response, generate_image
 
 from telegram import __version__ as TG_VER
@@ -31,9 +31,22 @@ if __version_info__ < (20, 0, 0, "alpha", 1):
 # Define a few command handlers. These usually take the two arguments update and
 
 # context.
+allowed_chat_ids_filter = filters.Chat(allowed_chat_ids) if "any" not in allowed_chat_ids else None
+
+def check(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    # Check if chat ID is allowed
+    # Convert update.message.chat_id to a string
+    chat_id_str = str(update.message.chat_id)
+    if "any" not in allowed_chat_ids and chat_id_str not in allowed_chat_ids:
+        logging.info(f"Chat ID {chat_id_str} not allowed")
+        return False
+    logging.info(f"Chat ID {chat_id_str} allowed")
+    return True
+
+
+
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Send a message when the command /start is issued."""
-
     user = update.effective_user
 
     await update.message.reply_html(
@@ -58,10 +71,12 @@ async def welcome_message(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
 
 async def handle_messages(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Handle incoming messages and generate a response using GPT-3."""
+    # Check if chat ID is allowed
+    if not check(update, context):
+        return
     logging.info(update)
     question = update.message.text
     logging.info(question)
-
     response_text = await generate_response(question)
 
     await update.message.reply_text(response_text)
@@ -71,6 +86,8 @@ async def image_generation(update: Update, context: ContextTypes.DEFAULT_TYPE) -
     # remove dalle command from message
     message = update.effective_message.text.replace("/imagine", "")
     logging.info(message)
+    if not check(update, context):
+        return
 
     # send prompt to openai image generation and get image url
     image_url=generate_image(message)
