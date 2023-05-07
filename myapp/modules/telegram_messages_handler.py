@@ -1,5 +1,5 @@
 from .logging import logging
-from .settings import telegram_api_token
+from .settings import telegram_api_token, help_text, welcome_text
 from .openai_conversation_handler import generate_response, generate_image
 
 from telegram import __version__ as TG_VER
@@ -44,24 +44,17 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Send a message when the command /help is issued."""
-    help_text = """
-<b>What is that?</b>
-  You can speak with the powerfull GPT3 AI here!
-<b>How?</b>
-  Just reply on any of my messages.
-<b>Note:</b>
-  This is <b>NOT</b> Chat-GPT but GPT3.5 (gpt-3.5-turbo)
-  To speak with Chat-GPT please use:
-  https://chat.openai.com/chat instead.
-"""
+
 
     await update.message.reply_html(help_text, disable_web_page_preview=True)
 
+async def welcome_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Send a message when a new user joins the chat."""
+    user = update.effective_user
 
-async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Echo the user message."""
-
-    await update.message.reply_text(update.message.text)
+    await update.message.reply_html(
+        rf"Hi {user.mention_html()} {welcome_text}",
+    )
 
 async def handle_messages(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Handle incoming messages and generate a response using GPT-3."""
@@ -120,11 +113,17 @@ def main() -> None:
     application.add_handler(CommandHandler("help", help_command))
 
     application.add_handler(CommandHandler("imagine", image_generation))
+
+    application.add_handler(CommandHandler("welcome", welcome_message))
     
 
     # on non command i.e message - run "handle_message"
 
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_messages))
+
+    # on new chat members - send welcome message
+
+    application.add_handler(MessageHandler(filters.StatusUpdate.NEW_CHAT_MEMBERS, welcome_message))
 
     # Run the bot until the user presses Ctrl-C
 
@@ -133,4 +132,6 @@ def main() -> None:
 if __name__ == "__main__":
 
     main()
+
+
 

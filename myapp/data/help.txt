@@ -1,0 +1,13 @@
+<b>What is that?</b>
+You can speak with the powerful GPT3 AI here!
+<b>How?</b>
+Just reply to any of my messages.
+<b>Note:</b>
+This is <b>NOT</b> Chat-GPT but GPT3.5 (gpt-3.5-turbo).
+To speak with Chat-GPT, please use:
+https://chat.openai.com/chat instead.
+<b>Available commands:</b>
+/help - show this help
+/welcome - show welcome message
+/start - start conversation
+/imagine *prompt* - generate a picture using DALLE.

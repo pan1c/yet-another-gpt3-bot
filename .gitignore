@@ -24,6 +24,9 @@ bin/dev/test.sh
 secrets.env
 config.json
 
+myapp/data/welcome.txt
+
+
 #Linters
 
 .pre-commit-config.yaml
