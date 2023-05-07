@@ -66,7 +66,7 @@ async def welcome_message(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
     user = update.effective_user
 
     await update.message.reply_html(
-        rf"Hi {user.mention_html()} {welcome_text}",
+        rf"Hi {user.mention_html()} {welcome_text}", disable_web_page_preview=True
     )
 
 async def handle_messages(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
