@@ -75,9 +75,12 @@ async def handle_messages(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
     if not check(update, context):
         return
     logging.info(update)
+    prev_message=update.message.reply_to_message.text
     question = update.message.text
-    logging.info(question)
-    response_text = await generate_response(question)
+    logging.info(f"Question: {question}")
+    logging.info(f"Previous message: {prev_message}")
+    prev_message=f'Previous message was: {prev_message}'
+    response_text = await generate_response(question,prev_message)
 
     await update.message.reply_text(response_text)
 

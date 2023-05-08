@@ -11,3 +11,5 @@ https://chat.openai.com/chat instead.
 /welcome - show welcome message
 /start - start conversation
 /imagine *prompt* - generate a picture using DALLE.
+<b>Bot source code</b>
+https://github.com/pan1c/yet-another-gpt3-bot/

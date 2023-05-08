@@ -4,13 +4,15 @@ from .settings import openai_api_key, gpt_system_role, gpt_model_name
 
 openai.api_key = openai_api_key
 
-async def generate_response(question: str) -> str:
+async def generate_response(question: str,prev_message: str) -> str:
     """Use GPT-3 to generate a response to the given question."""
     if question:
         response = openai.ChatCompletion.create(
+
             model=gpt_model_name,
             messages=[
-                #{"role": "system", "content": "You are a helpful assistant."},
+                # https://platform.openai.com/docs/guides/chat?utm_medium=email&_hsmi=248356722
+                # {"role": "system", "content": "You are a helpful assistant."},
                 # {"role": "user", "content": "Who won the world series in 2020?"},
                 # {"role": "assistant", "content": "The Los Angeles Dodgers won the World Series in 2020."},
                 {
@@ -20,6 +22,10 @@ async def generate_response(question: str) -> str:
                 {
                     "role": "user",
                     "content": question
+                },
+                {
+                    "role": "assistant",
+                    "content": prev_message
                 }
             ]
         )
