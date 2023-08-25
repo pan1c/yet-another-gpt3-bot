@@ -6,3 +6,5 @@ services:
     image: gpt-bot
     env_file:
       - secrets.env
+    volumes:
+      - /tmp/data:/tmp/data

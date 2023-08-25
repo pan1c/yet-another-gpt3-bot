@@ -1,6 +1,8 @@
+import re
 from .logging import logging
-from .settings import telegram_api_token, help_text, welcome_text, allowed_chat_ids
+from .settings import telegram_api_token, help_text, welcome_text, allowed_chat_ids, country_code
 from .openai_conversation_handler import generate_response, generate_image
+from .csv_writer import write_csv
 
 from telegram import __version__ as TG_VER
 from telegram import ForceReply
@@ -86,6 +88,7 @@ async def handle_messages(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
 
 # image_generation command, aka DALLE
 async def image_generation(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Generate image using DALLE."""
     # remove dalle command from message
     message = update.effective_message.text.replace("/imagine", "")
     logging.info(message)
@@ -117,6 +120,24 @@ async def image_generation(update: Update, context: ContextTypes.DEFAULT_TYPE) -
         )
 
 
+async def postcode(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Save user's postcode."""
+    user_id = update.effective_user.id
+    user_name = update.effective_user.username
+    user_firstname = update.effective_user.first_name
+    label = user_firstname
+    message = update.effective_message.text.removeprefix("/postcode")
+    if message == "":
+        responce_text = "No postcode provided. Please specify first part of your UK postcode like this: /postcode SW1"
+    else:
+        message = re.sub(r'[^A-Z0-9]', '', message.upper().replace(" ", ""))
+
+        logging.info(message)
+        write_csv([{"id": user_id, "country": country_code, "postcode": message, "label": label}])
+        responce_text = f"Thank you {user_name} for your UK postcode"
+    
+    await update.message.reply_text(responce_text)
+
 
 
 def main() -> None:
@@ -135,6 +156,8 @@ def main() -> None:
     application.add_handler(CommandHandler("imagine", image_generation))
 
     application.add_handler(CommandHandler("welcome", welcome_message))
+
+    application.add_handler(CommandHandler("postcode", postcode))
     
 
     # on non command i.e message - run "handle_message"

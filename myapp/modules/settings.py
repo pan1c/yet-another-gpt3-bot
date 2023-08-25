@@ -7,6 +7,8 @@ gpt_system_role = os.getenv("GPT_SYSTEM_ROLE", "You are a helpful assistant.")
 gpt_model_name = os.getenv("GPT_MODEL_NAME", "gpt-3.5-turbo")
 log_level = os.getenv("LOG_LEVEL", "INFO")
 allowed_chat_ids = os.getenv("ALLOWED_CHAT_IDS", "any").split(",")
+locations_file_name = os.getenv("LOCATIONS_FILE_NAME", "/tmp/data/locations.csv")
+country_code = os.getenv("COUNTRY_CODE", "GB")
 
 try:
     # Open the help text file and read its contents
