@@ -125,7 +125,8 @@ async def postcode(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     user_id = update.effective_user.id
     user_name = update.effective_user.username
     user_firstname = update.effective_user.first_name
-    label = user_firstname
+    user_lastname = update.effective_user.last_name
+    label = user_firstname + " " + user_lastname
     message = update.effective_message.text.removeprefix("/postcode")
     if message == "":
         responce_text = "No postcode provided. Please specify first part of your UK postcode like this: /postcode SW1"
