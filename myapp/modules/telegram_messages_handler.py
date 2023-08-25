@@ -143,7 +143,7 @@ async def postcode(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         if message == "":
             responce_text = "Invalid postcode. Please specify first part of your UK postcode like this: /postcode SW1"
         else:
-            logging.info(message)
+            logging.info(user_id + " " + country_code + " " + message + " " + label)
             write_csv([{"id": user_id, "country": country_code, "postcode": message, "label": label}])
             responce_text = f"Thank you {user_name} for your UK postcode"
     
