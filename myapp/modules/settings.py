@@ -4,7 +4,7 @@ from .logging import logging
 openai_api_key = os.getenv("OPENAI_API_KEY")
 telegram_api_token = os.getenv("TELEGRAM_BOT_TOKEN")
 gpt_system_role = os.getenv("GPT_SYSTEM_ROLE", "You are a helpful assistant.")
-gpt_model_name = os.getenv("GPT_MODEL_NAME", "gpt-3.5-turbo")
+gpt_model_name = os.getenv("GPT_MODEL_NAME", "gpt-3.5-turbo-1106")
 log_level = os.getenv("LOG_LEVEL", "INFO")
 allowed_chat_ids = os.getenv("ALLOWED_CHAT_IDS", "any").split(",")
 locations_file_name = os.getenv("LOCATIONS_FILE_NAME", "/tmp/data/locations.csv")
