@@ -12,7 +12,8 @@ from telegram.ext import CommandHandler
 from telegram.ext import ContextTypes
 from telegram.ext import filters
 from telegram.ext import MessageHandler
-
+#from telegram.helpers import escape_markdown
+#MarkDownV2 is broken, mayebe in future it will be fixed
 
 try:
 
@@ -30,9 +31,7 @@ if __version_info__ < (20, 0, 0, "alpha", 1):
         f"visit https://docs.python-telegram-bot.org/en/v{TG_VER}/examples.html"
     )
 
-# Define a few command handlers. These usually take the two arguments update and
-
-# context.
+# Define a few command handlers. These usually take the two arguments update and context.
 allowed_chat_ids_filter = filters.Chat(allowed_chat_ids) if "any" not in allowed_chat_ids else None
 
 def check(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -65,11 +64,11 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
 
 async def welcome_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Send a message when a new user joins the chat."""
-    user = update.effective_user
-
-    await update.message.reply_html(
-        rf"Hi {user.mention_html()} {welcome_text}", disable_web_page_preview=True
-    )
+    users = update.message.new_chat_members if update.message.new_chat_members else [update.effective_user]
+    for user in users:
+        await update.message.reply_html(
+            rf"Hi {user.mention_html()} {welcome_text}", disable_web_page_preview=True
+        )
 
 async def handle_messages(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Handle incoming messages and generate a response using GPT-3."""
@@ -83,8 +82,7 @@ async def handle_messages(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
     logging.info(f"Previous message: {prev_message}")
     prev_message=f'Previous your message was: {prev_message}'
     response_text = await generate_response(question,prev_message)
-
-    await update.message.reply_text(response_text)
+    await update.message.reply_html(response_text, disable_web_page_preview=True)
 
 # image_generation command, aka DALLE
 async def image_generation(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
