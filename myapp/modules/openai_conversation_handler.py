@@ -1,4 +1,5 @@
 from .logging import logging
+import openai
 from openai import OpenAI
 from .settings import openai_api_key, gpt_system_role, gpt_model_name
 
@@ -37,19 +38,23 @@ async def generate_response(question: str,prev_message: str) -> str:
     return response_text
 
 def generate_image(prompt):
-    client = OpenAI(api_key=openai_api_key)
-    response = client.images.generate(
-        model="dall-e-3",
-        prompt=prompt,
-        size="1024x1024",
-        quality="standard",
-        n=1,
-    )
-    logging.info(response)
-    image_url = response.data[0].url
-
-    # for debug use
-    # image_url = "https://catdoctorofmonroe.com/wp-content/uploads/2020/09/iconfinder_cat_tied_275717.png"
-    usage = 1 # reserve for future use
-    return (image_url)
-
+    client = openai.OpenAI(api_key=openai_api_key)
+    try:
+        response = client.images.generate(
+            model="dall-e-3",
+            prompt=prompt,
+            size="1024x1024",
+            quality="standard",
+            n=1,
+        )
+        logging.info(response)
+        image_url = response.data[0].url
+        return image_url, None
+    except openai.OpenAIError as e:
+        error_msg = f"OpenAI API error: {e}"
+        logging.error(error_msg)
+        return None, error_msg
+    except Exception as e:
+        error_msg = f"Unexpected error: {e}"
+        logging.error(error_msg)
+        return None, error_msg

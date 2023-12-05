@@ -1,4 +1,3 @@
-import asyncio
 import re
 from .logging import logging
 from .settings import telegram_api_token, help_text, welcome_text, allowed_chat_ids, country_code
@@ -43,7 +42,7 @@ def get_message_from_command(text: str) -> str:
     else:
         return ""
 
-def check(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+def check_group(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     # Check if chat ID is allowed
     # Convert update.message.chat_id to a string
     chat_id_str = str(update.message.chat_id)
@@ -80,10 +79,11 @@ async def welcome_message(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
         )
 
 async def handle_messages(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Handle incoming messages and generate a response using GPT-3."""
+    """Handle incoming messages and generate a response using GPT"""
     # Check if chat ID is allowed
-    if not check(update, context):
+    if not check_group(update, context):
         return
+    
     logging.info(update)
     prev_message=update.message.reply_to_message.text
     question = update.message.text
@@ -93,10 +93,11 @@ async def handle_messages(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
     response_text = await generate_response(question,prev_message)
     await update.message.reply_html(response_text, disable_web_page_preview=True)
 
-# image_generation command, aka DALLE
 async def image_generation(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Generate image using DALLE."""
-    # remove dalle command from message
+    if not check_group(update, context):
+        return
+
     message = get_message_from_command(update.effective_message.text)
     if message == "":
         await context.bot.send_message(
@@ -105,19 +106,19 @@ async def image_generation(update: Update, context: ContextTypes.DEFAULT_TYPE) -
         )
         return
     logging.info(message)
-    if not check(update, context):
-        return
 
+    await context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text="Generating image for your prompt. Please wait..."
+    )
     # send prompt to openai image generation and get image url
-    image_url=generate_image(message)
+    image_url, error_message = generate_image(message)
     logging.info(image_url)
-    
-
-    # if exceeds use limit, send message instead
+    logging.info(error_message)
     if image_url is None:
         await context.bot.send_message(
             chat_id=update.effective_chat.id,
-            text="Something went wrong. Please try again later."
+            text=f"Error: {error_message}"
         )
     else:
         # sending typing action
