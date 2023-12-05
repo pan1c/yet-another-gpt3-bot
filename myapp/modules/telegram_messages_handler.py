@@ -1,3 +1,4 @@
+import asyncio
 import re
 from .logging import logging
 from .settings import telegram_api_token, help_text, welcome_text, allowed_chat_ids, country_code
@@ -33,6 +34,14 @@ if __version_info__ < (20, 0, 0, "alpha", 1):
 
 # Define a few command handlers. These usually take the two arguments update and context.
 allowed_chat_ids_filter = filters.Chat(allowed_chat_ids) if "any" not in allowed_chat_ids else None
+
+
+def get_message_from_command(text: str) -> str:
+    """Get the message from a command."""
+    if " " in text:
+        return text.split(" ", 1)[1].strip()
+    else:
+        return ""
 
 def check(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     # Check if chat ID is allowed
@@ -88,7 +97,13 @@ async def handle_messages(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
 async def image_generation(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Generate image using DALLE."""
     # remove dalle command from message
-    message = update.effective_message.text.replace("/imagine", "")
+    message = get_message_from_command(update.effective_message.text)
+    if message == "":
+        await context.bot.send_message(
+            chat_id=update.effective_chat.id,
+            text="No message provided. Please specify your message like this: /imagine a cat"
+        )
+        return
     logging.info(message)
     if not check(update, context):
         return
@@ -133,7 +148,7 @@ async def postcode(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
             label += " "
         label += user_lastname
 
-    message = update.effective_message.text.removeprefix("/postcode")
+    message = get_message_from_command(update.effective_message.text)
     if message == "":
         responce_text = "No postcode provided. Please specify first part of your UK postcode like this: /postcode SW1"
     else:
