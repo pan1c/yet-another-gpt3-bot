@@ -49,12 +49,13 @@ def generate_image(prompt):
         )
         logging.info(response)
         image_url = response.data[0].url
-        return image_url, None
+        revised_prompt = response.data[0].revised_prompt
+        return image_url, revised_prompt, None
     except openai.OpenAIError as e:
         error_msg = f"OpenAI API error: {e}"
         logging.error(error_msg)
-        return None, error_msg
+        return None, None, error_msg
     except Exception as e:
         error_msg = f"Unexpected error: {e}"
         logging.error(error_msg)
-        return None, error_msg
+        return None, None, error_msg
