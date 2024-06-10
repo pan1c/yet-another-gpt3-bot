@@ -137,7 +137,8 @@ async def image_generation(update: Update, context: ContextTypes.DEFAULT_TYPE) -
         await context.bot.send_photo(
             chat_id=update.effective_chat.id,
             photo=image_url,
-            caption = f"{revised_prompt} (DALLE-3)($0.04 / image)"
+            parse_mode="MarkdownV2",
+            caption = f"```\n{revised_prompt}\n```\n",
         )
 
 
@@ -167,7 +168,7 @@ async def postcode(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
             logging.info(str(user_id) + " " + country_code + " " + message + " " + label)
             write_csv([{"id": user_id, "country": country_code, "postcode": message, "label": label}])
             responce_text = f"Thank you {user_name} for your UK postcode"
-    
+
     await update.message.reply_text(responce_text)
 
 
@@ -190,7 +191,7 @@ def main() -> None:
     application.add_handler(CommandHandler("welcome", welcome_message))
 
     application.add_handler(CommandHandler("postcode", postcode))
-    
+
 
     # on non command i.e message - run "handle_message"
 
@@ -207,6 +208,3 @@ def main() -> None:
 if __name__ == "__main__":
 
     main()
-
-
-
